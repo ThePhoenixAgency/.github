@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rendu API - The Phoenix Agency</title>
+<link rel="stylesheet" href="https://thephoenixagency.github.io/styles.css">
+<style>
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding: 2rem;
+  min-height: 100vh;
+}
+.api-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+h1 {
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+.subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.api-card {
+  background: var(--bg-card);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px var(--shadow);
+  border: 1px solid var(--border-color);
+}
+.api-card h2 {
+  color: var(--primary);
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+.api-card .endpoint {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.api-card .endpoint code {
+  background: var(--bg-secondary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: var(--accent);
+  font-size: 0.85em;
+}
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  background: #22c55e;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+.status-badge.error {
+  background: var(--accent);
+}
+.status-badge.loading {
+  background: var(--text-secondary);
+}
+.field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  margin: 0.4rem 0;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+.field-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.field-value {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  max-width: 60%;
+  text-align: right;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+.org-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.org-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+}
+.org-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.org-desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.repo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s;
+  text-decoration: none;
+}
+.repo-item:hover {
+  border-color: var(--primary);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.repo-info {
+  flex: 1;
+  min-width: 0;
+}
+.repo-name {
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+.repo-desc {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  margin-top: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.repo-meta {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+.repo-meta code {
+  background: var(--bg-card);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.78em;
+}
+.repo-stars {
+  background: var(--primary);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+.json-toggle {
+  margin-top: 1rem;
+}
+.json-toggle summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  user-select: none;
+  padding: 0.4rem 0;
+}
+.json-toggle summary:hover {
+  color: var(--primary);
+}
+.json-block {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-primary);
+  margin-top: 0.5rem;
+}
+.loading-text {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-weight: 600;
+}
+.back-link:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+}
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px var(--shadow);
+  transition: all 0.3s;
+}
+.theme-toggle:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  body { padding: 1rem; }
+  .theme-toggle { top: 1rem; right: 1rem; width: 38px; height: 38px; }
+}
+</style>
+<script>
+(function () {
+  var theme = localStorage.getItem('theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+</script>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" title="Changer le thème" aria-label="Changer le thème">🌓</button>
+
+<div class="api-container">
+  <a href="https://thephoenixagency.github.io" class="back-link">← Retour à l'accueil</a>
+
+  <h1>🔌 Rendu API en HTML</h1>
+  <p class="subtitle">Visualisation des réponses API avec le style habituel — The Phoenix Agency</p>
+
+  <div class="cards-grid">
+
+    <!-- Allo-Météo API Status -->
+    <div class="api-card">
+      <h2>🌤️ Allo-Météo API</h2>
+      <p class="endpoint">Endpoint : <code>allo-meteo.vercel.app/api/ping</code></p>
+      <div id="meteo-content"><div class="loading-text">Chargement…</div></div>
+    </div>
+
+    <!-- GitHub Org Info -->
+    <div class="api-card">
+      <h2>🐙 Organisation GitHub</h2>
+      <p class="endpoint">Endpoint : <code>api.github.com/orgs/ThePhoenixAgency</code></p>
+      <div id="org-content"><div class="loading-text">Chargement…</div></div>
+    </div>
+
+  </div>
+
+  <!-- GitHub Repos -->
+  <div class="api-card" style="margin-top: 2rem;">
+    <h2>📦 Dépôts Publics</h2>
+    <p class="endpoint">Endpoint : <code>api.github.com/orgs/ThePhoenixAgency/repos</code></p>
+    <div id="repos-content"><div class="loading-text">Chargement…</div></div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  var current = document.documentElement.getAttribute('data-theme');
+  var next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function safeUrl(url) {
+  if (typeof url === 'string' && /^https:\/\//i.test(url)) {
+    return escapeHtml(url);
+  }
+  return '#';
+}
+
+function fieldRow(label, value) {
+  return '<div class="field-row">'
+    + '<span class="field-label">' + escapeHtml(label) + '</span>'
+    + '<span class="field-value">' + escapeHtml(String(value)) + '</span>'
+    + '</div>';
+}
+
+function statusBadge(ok, label) {
+  return '<span class="status-badge' + (ok ? '' : ' error') + '">' + escapeHtml(label) + '</span>';
+}
+
+function jsonDetails(data) {
+  return '<details class="json-toggle"><summary>Voir la réponse JSON brute</summary>'
+    + '<div class="json-block">' + escapeHtml(JSON.stringify(data, null, 2)) + '</div>'
+    + '</details>';
+}
+
+// Allo-Météo ping
+async function loadMeteoStatus() {
+  var el = document.getElementById('meteo-content');
+  try {
+    var res = await fetch('https://allo-meteo.vercel.app/api/ping');
+    var data = await res.json();
+    el.innerHTML = statusBadge(res.ok, res.ok ? '✅ En ligne' : '❌ Hors ligne')
+      + fieldRow('Status', data.status || '-')
+      + fieldRow('Timestamp', data.timestamp || '-')
+      + fieldRow('Code HTTP', res.status)
+      + jsonDetails(data);
+  } catch (err) {
+    el.innerHTML = statusBadge(false, '❌ Erreur de connexion')
+      + fieldRow('Message', err.message);
+  }
+}
+
+// GitHub Org Info
+async function loadOrgInfo() {
+  var el = document.getElementById('org-content');
+  try {
+    var res = await fetch('https://api.github.com/orgs/ThePhoenixAgency');
+    var data = await res.json();
+    var avatar = (data.avatar_url && /^https:\/\//i.test(data.avatar_url))
+      ? '<img src="' + safeUrl(data.avatar_url) + '" alt="Logo" class="org-avatar">'
+      : '';
+    el.innerHTML = '<div class="org-header">'
+      + avatar
+      + '<div><div class="org-name">' + escapeHtml(data.name || data.login || '') + '</div>'
+      + '<div class="org-desc">' + escapeHtml(data.description || '') + '</div></div>'
+      + '</div>'
+      + fieldRow('Dépôts publics', data.public_repos != null ? data.public_repos : '-')
+      + fieldRow('Membres publics', data.public_members != null ? data.public_members : '-')
+      + fieldRow('Localisation', data.location || '-')
+      + fieldRow('Blog', data.blog || '-')
+      + jsonDetails(data);
+  } catch (err) {
+    el.innerHTML = statusBadge(false, '❌ Erreur')
+      + fieldRow('Message', err.message);
+  }
+}
+
+// GitHub Repos
+async function loadRepos() {
+  var el = document.getElementById('repos-content');
+  try {
+    var res = await fetch('https://api.github.com/orgs/ThePhoenixAgency/repos?sort=updated&per_page=10');
+    var repos = await res.json();
+    if (!Array.isArray(repos) || repos.length === 0) {
+      el.innerHTML = '<div class="loading-text">Aucun dépôt trouvé.</div>';
+      return;
+    }
+    el.innerHTML = repos.map(function (repo) {
+      var lang = repo.language ? '<code>' + escapeHtml(repo.language) + '</code> — ' : '';
+      return '<a href="' + safeUrl(repo.html_url) + '" target="_blank" rel="noopener" class="repo-item">'
+        + '<div class="repo-info">'
+        + '<div class="repo-name">📁 ' + escapeHtml(repo.name) + '</div>'
+        + '<div class="repo-desc">' + escapeHtml(repo.description || '') + '</div>'
+        + '<div class="repo-meta">' + lang + 'Mis à jour : ' + new Date(repo.updated_at).toLocaleDateString('fr-FR') + '</div>'
+        + '</div>'
+        + '<span class="repo-stars">⭐ ' + repo.stargazers_count + '</span>'
+        + '</a>';
+    }).join('');
+  } catch (err) {
+    el.innerHTML = statusBadge(false, '❌ Erreur')
+      + fieldRow('Message', err.message);
+  }
+}
+
+loadMeteoStatus();
+loadOrgInfo();
+loadRepos();
+</script>
+
+</body>
+</html>

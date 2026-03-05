@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <!-- Preload critical scripts -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js" as="script">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js" as="script">
+    <link rel="preload" href="https://unpkg.com/marked@15/marked.min.js" as="script">
+    <link rel="preload" href="https://unpkg.com/dompurify@3/dist/purify.min.js" as="script">
     <!-- GitHub Markdown Light CSS -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
@@ -116,9 +116,9 @@
         }
     </style>
     <!-- Marked for Markdown Parsing -->
-    <script defer src="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js"></script>
+    <script defer src="https://unpkg.com/marked@15/marked.min.js"></script>
     <!-- DOMPurify for Security -->
-    <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+    <script defer src="https://unpkg.com/dompurify@3/dist/purify.min.js"></script>
 </head>
 
 <body>
@@ -139,14 +139,14 @@
         const REPO_OWNER = 'ThePhoenixAgency';
         const REPO_NAME = '.github';
         const BRANCH = 'main';
-        const FILE_PATH = 'README.md';
+        const FILE_PATH = 'profile/README.md';
         // -------------------------------------------------------
 
         async function loadMermaid() {
             if (window.mermaid) return;
             await new Promise((resolve, reject) => {
                 const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+                script.src = 'https://unpkg.com/mermaid@11/dist/mermaid.min.js';
                 script.onload = resolve;
                 script.onerror = reject;
                 document.head.appendChild(script);
@@ -170,12 +170,12 @@
 
                 // Replace relative image src attributes in HTML img tags
                 let processedMarkdown = markdown.replace(
-                    /src="(?!https?:\/\/|\/\/)([^"]+)"/g,
+                    /src="(?!https?:\/\/|\/)([^"]+)"/g,
                     `src="${rawBaseUrl}$1"`
                 );
                 // Replace relative Markdown image syntax: ![alt](./path) or ![alt](path)
                 processedMarkdown = processedMarkdown.replace(
-                    /!\[(.*?)\]\((?!https?:\/\/|\/\/)([^)]+)\)/g,
+                    /!\[(.*?)\]\((?!https?:\/\/|\/)([^)]+)\)/g,
                     (match, alt, path) => `![${alt}](${rawBaseUrl}${path.replace(/^\.\//, '')})`
                 );
 
